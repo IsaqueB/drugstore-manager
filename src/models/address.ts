@@ -1,4 +1,4 @@
-import pool from "../database/index";
+import { conn } from "../database/index";
 
 async function create(street: string, number: number, zipcode: string){
     const query = `
@@ -8,7 +8,7 @@ async function create(street: string, number: number, zipcode: string){
         VALUES
         ('${street}', ${number}, '${zipcode}')
     ;`
-    return pool.query(query);
+    return conn.query(query);
 }
 
 export {

@@ -3,27 +3,23 @@ import { createPool, PoolConnection } from "mariadb";
 const pool = createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USR,
-    password: process.env.DB_PWD,
-    database: process.env.DB_DB
+    password: process.env.DB_PWD
 })
 
-pool.getConnection()
-    .then(async conn => {
-        console.log("Connected successfully");
-        await setupDatabase(conn);
-        return conn
-    })
-    .catch(err => {
-        console.log(`Connected failed with: ${err.message}`)
-    })
-    .then(conn => {
-        if(conn){
-            console.log("Connected released")
-            conn.release();
-        }
-    })
+let conn: PoolConnection;
 
-export default pool;
+(async function getConnection(){
+    const connection = await pool.getConnection()
+    await setupDatabase(connection);
+    console.log("Connected successfully");
+    conn = connection
+})()
+
+export default pool
+
+export {
+    conn
+}
 
 function setupDatabase(conn: PoolConnection){
     return new Promise(async (resolve, reject) => {
@@ -45,8 +41,8 @@ function setupDatabase(conn: PoolConnection){
             //Create Working Hour Table
             await conn.query(`CREATE TABLE IF NOT EXISTS working_hour (
                 id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                open_time DATE NOT NULL,
-                close_time DATE NOT NULL
+                open_time TIME NOT NULL,
+                close_time TIME NOT NULL
                 );`);
             await conn.query(`CREATE TABLE IF NOT EXISTS phone (
                 id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -56,7 +52,7 @@ function setupDatabase(conn: PoolConnection){
             //Create Pharmacy Table
             await conn.query(`CREATE TABLE IF NOT EXISTS pharmacy (
                 id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                logo MEDIUMBLOB NOT NULL, 
+                logo CHAR(10) NOT NULL, 
                 name CHAR(20) NOT NULL, 
                 cnpj CHAR(14) NOT NULL, 
                 address_id SMALLINT UNSIGNED NOT NULL, 

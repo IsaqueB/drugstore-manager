@@ -1,4 +1,9 @@
-import pool from "../database/index";
+// import { PoolConnection } from "mariadb";
+// import {getConnection} from "../database/index";
+
+// let conn: PoolConnection;
+// getConnection().then(result => {conn = result})
+import { conn } from "../database"
 
 async function create(open_time: Date, close_time: Date){
     const query = `
@@ -6,9 +11,9 @@ async function create(open_time: Date, close_time: Date){
         working_hour 
         (open_time, close_time) 
         VALUES
-        (${open_time}, ${close_time}')
+        ('${open_time}', '${close_time}')
     ;`
-    return pool.query(query);
+    return conn.query(query);
 }
 
 export {

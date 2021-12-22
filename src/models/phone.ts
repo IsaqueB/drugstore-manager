@@ -1,4 +1,9 @@
-import pool from "../database/index";
+// import { PoolConnection } from "mariadb";
+// import {getConnection} from "../database/index";
+
+// let conn: PoolConnection;
+// getConnection().then(result => {conn = result})
+import { conn } from "../database"
 
 async function create(ddd: number, number: number){
     const query = `
@@ -6,9 +11,9 @@ async function create(ddd: number, number: number){
         phone 
         (ddd, number) 
         VALUES
-        (${ddd}, ${number}')
+        (${ddd}, ${number})
     ;`
-    return pool.query(query);
+    return conn.query(query);
 }
 
 export {
